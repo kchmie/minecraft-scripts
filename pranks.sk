@@ -1,0 +1,6 @@
+command /tss <player>:
+    permission: op
+    trigger:
+        play sound "entity.creeper.primed" to arg
+        wait 4 seconds
+        play sound "entity.generic.explode" to arg

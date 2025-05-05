@@ -11,6 +11,9 @@ command /register <text>:
 
 command /login <text>:
     trigger:
+        if {login_attempts::%uuid of player%} is not set:
+            set {login_attempts::%uuid of player%} to 0
+
         if {is_logged_in.%uuid of player%} is true:
             send "&cJesteś już zalogowany." to player
             stop
@@ -19,6 +22,12 @@ command /login <text>:
             stop
         if arg-1 hashed with SHA-256 is not {password.%uuid of player%}:
             send "&c❌ Błędne hasło!" to player
+
+            add 1 to {login_attempts::%uuid of player%}
+            if {login_attempts::%uuid of player%} >= 3:
+                kick player due to "&c❌ Za dużo nieudanych prób logowania. Spróbuj później."
+                delete {login_attempts::%uuid of player%}
+
             stop
         set {is_logged_in.%uuid of player%} to true
         execute console command "gamemode %{gamemode.%uuid of player%}% %player%"
@@ -34,6 +43,9 @@ command /login <text>:
 
         set {lastlogin::%name of player%} to "%now%"
 
+on Skript stop:
+     delete {login_attempts::*}
+
 on quit:
     if {is_logged_in.%uuid of player%} is true:
         delete {is_logged_in.%uuid of player%}
@@ -42,11 +54,16 @@ on quit:
         else:
             set {is_op.%uuid of player%} to false
         set {gamemode.%uuid of player%} to gamemode of player
+        deop player
+        execute console command "gamemode spectator %player%"
 
 on join:
     set join message to ""
     deop player
     set {is_logged_in.%uuid of player%} to false
+
+    if {login_attempts::%uuid of player%} is set:
+        delete {login_attempts::%uuid of player%}
 
     if {password.%uuid of player%} is set:
         send title "§dTotalna Wyspa Żenady" with subtitle "&7Zaloguj się komendą /login <hasło>" to player for 9999999 seconds 
