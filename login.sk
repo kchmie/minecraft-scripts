@@ -90,7 +90,7 @@ on command:
                 send "&cMusisz się najpierw zalogować!"
                 stop
         if sender is not "chris":
-            if command is "deop" or "sk" or "leturmemoryrest" or "spark":
+            if command is "deop" or "sk" or "spark" or "gamerule":
                 cancel event
 
 command /gracze:
