@@ -1,0 +1,54 @@
+on chat:
+    set chat format to "§7[%player%]<light gray> » <white>[message]"
+
+on quit:
+    delete {lastmsg::%uuid of player%}
+
+command /w <player> <text>:
+    trigger:
+        if arg-1 is not set:
+            send "Musisz podać gracza!" to player
+            stop
+
+        if arg-2 is not set:
+            send "Musisz wpisać wiadomość!" to player
+            stop
+        
+        if arg-1 is player:
+            send "&cNie możesz wysłać sobie wiadomości." to player
+            stop
+        
+        set {_target} to arg-1
+        
+        send "§6%player% → Ty: §f%arg-2%" to {_target}
+        send "§6Ty → %name of {_target}%: §f%arg-2%" to player
+        
+        play sound "block.note_block.pling" to player
+        play sound "block.note_block.pling" to {_target}
+        
+        set {lastmsg::%uuid of {_target}%} to uuid of player
+
+command /re <text>:
+    trigger:
+        if arg-1 is not set:
+            send "&cUżycie: /re <wiadomość>" to player
+            stop
+        
+        if {lastmsg::%uuid of player%} is not set:
+            send "&cNikt nie wysłał do ciebie wiadomości." to player
+            stop
+        
+        set {_lastUUID} to {lastmsg::%uuid of player%}
+        set {_target} to player({_lastUUID})
+        
+        if {_target} is not set:
+            send "&cGracz który wysłał Ci ostatnio wiadomość nie jest online." to player
+            stop
+        
+        send "§6%player% → Ty: §f%arg-1%" to {_target}
+        send "§6Ty → %name of {_target}%: §f%arg-1%" to player
+        
+        play sound "block.note_block.pling" to player
+        play sound "block.note_block.pling" to {_target}
+        
+        set {lastmsg::%uuid of {_target}%} to uuid of player

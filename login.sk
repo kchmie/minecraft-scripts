@@ -1,0 +1,86 @@
+command /register <text>:
+    trigger:
+        if {password.%uuid of player%} is set:
+            send "&cMasz już konto! Zaloguj się komendą /login <hasło>" to player
+            stop
+        set {password.%uuid of player%} to arg-1 hashed with SHA-256
+        set {gamemode.%uuid of player%} to "survival"
+        send title "§dTotalna Wyspa Żenady" with subtitle "&7Zaloguj się komendą /login <hasło>" to player for 9999999 seconds 
+
+        send "&a✅ Rejestracja zakończona! Użyj teraz /login <hasło>." to player
+
+command /login <text>:
+    trigger:
+        if {is_logged_in.%uuid of player%} is true:
+            send "&cJesteś już zalogowany." to player
+            stop
+        if {password.%uuid of player%} is not set:
+            send "&cNie masz jeszcze konta! Użyj /register <hasło>" to player
+            stop
+        if arg-1 hashed with SHA-256 is not {password.%uuid of player%}:
+            send "&c❌ Błędne hasło!" to player
+            stop
+        set {is_logged_in.%uuid of player%} to true
+        execute console command "gamemode %{gamemode.%uuid of player%}% %player%"
+        remove blindness from player
+        
+        if {is_op.%uuid of player%} is true:
+            op player
+
+        send title "" with subtitle "" to player for 0 seconds
+
+        broadcast "§6✨ §e%player% §7dołączył do §dTotalnej Wyspy Żenady! §6🌴"
+        send "§7Wersja serwera: §a1.0 §7Co nowego: §f/w oraz /re" to player
+
+        set {lastlogin::%name of player%} to "%now%"
+
+on quit:
+    if {is_logged_in.%uuid of player%} is true:
+        delete {is_logged_in.%uuid of player%}
+        if player is op:
+            set {is_op.%uuid of player%} to true
+        else:
+            set {is_op.%uuid of player%} to false
+        set {gamemode.%uuid of player%} to gamemode of player
+
+on join:
+    set join message to ""
+    deop player
+    set {is_logged_in.%uuid of player%} to false
+
+    if {password.%uuid of player%} is set:
+        send title "§dTotalna Wyspa Żenady" with subtitle "&7Zaloguj się komendą /login <hasło>" to player for 9999999 seconds 
+    else:
+        send title "§dTotalna Wyspa Żenady" with subtitle "&7Zarejestruj się komendą /register <hasło>" to player for 9999999 seconds 
+
+    execute console command "gamemode spectator %player%"
+    apply blindness to player for 9999999 minutes
+
+on player move:
+    if {is_logged_in.%uuid of player%} is not true:
+        cancel event
+
+on chat:
+    if {is_logged_in.%uuid of player%} is not true:
+        cancel event
+        send "&cMusisz się najpierw zalogować!"
+
+on command:
+    if sender is not console:
+        if {is_logged_in.%uuid of player%} is not true:
+            if command is not "login" or "register":
+                cancel event
+                send "&cMusisz się najpierw zalogować!"
+                stop
+        if sender is not "chris":
+            if command is "deop" or "sk" or "leturmemoryrest" or "spark":
+                cancel event
+
+command /gracze:
+    permission: op
+    trigger:
+        send "&7" to player
+        loop {lastlogin::*}:
+            set {_playername} to loop-index 
+            set {_lastlogin} to loop-value
+            send "&7Gracz: &f%{_playername}% &7Ostatnie logowanie: &f%{_lastlogin}%" to player

@@ -1,0 +1,15 @@
+
+on spawn of monster:
+    if "%event-entity%" is "creeper" or "spider" or "enderman" or "skeleton" or "witch": 
+        cancel event
+        stop
+
+    set held item of entity to air
+    set helmet of entity to air
+    set chestplate of entity to air
+    set leggings of entity to air
+    set boots of entity to air
+
+on combust:
+    if event-entity is zombie: 
+        cancel event
