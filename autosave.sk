@@ -1,0 +1,11 @@
+every 5 minutes:
+	if number of players > 0:
+		broadcast "§7✨ Zapisuje mape"
+		
+		execute console command "save-all"
+		loop 1001 times:
+			set {autosave::%loop-value%} to random integer between 0 and 10000
+
+		delete {autosave::*}
+
+		broadcast "§7✨ Mapa zapisana poprawnie"
