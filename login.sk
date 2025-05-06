@@ -11,15 +11,14 @@ command /register <text>:
 
 command /login <text>:
     trigger:
-        if {login_attempts::%uuid of player%} is not set:
-            set {login_attempts::%uuid of player%} to 0
-
         if {is_logged_in.%uuid of player%} is true:
             send "&cJesteś już zalogowany." to player
             stop
         if {password.%uuid of player%} is not set:
             send "&cNie masz jeszcze konta! Użyj /register <hasło>" to player
             stop
+        if {login_attempts::%uuid of player%} is not set:
+            set {login_attempts::%uuid of player%} to 0
         if arg-1 hashed with SHA-256 is not {password.%uuid of player%}:
             send "&c❌ Błędne hasło!" to player
 
@@ -39,14 +38,17 @@ command /login <text>:
         send title "" with subtitle "" to player for 0 seconds
 
         broadcast "§6✨ §e%player% §7dołączył do §dTotalnej Wyspy Żenady! §6🌴"
-        send "§7Wersja serwera: §a1.0 §7Co nowego: §f/w oraz /re" to player
+        send "§7Wersja serwera: §a1.1 §7Co nowego: §fautosave" to player
 
         set {lastlogin::%name of player%} to "%now%"
+        delete {login_attempts::%uuid of player%}
 
 on Skript stop:
      delete {login_attempts::*}
 
 on quit:
+    if {login_attempts::%uuid of player%} is set:
+        delete {login_attempts::%uuid of player%}
     if {is_logged_in.%uuid of player%} is true:
         delete {is_logged_in.%uuid of player%}
         if player is op:
