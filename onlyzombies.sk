@@ -1,6 +1,6 @@
 
 on spawn of monster:
-    if "%event-entity%" is "creeper" or "spider" or "enderman" or "skeleton" or "witch": 
+    if "%event-entity%" is "creeper" or "spider" or "enderman" or "skeleton" or "witch" or "wither": 
         cancel event
         stop
 

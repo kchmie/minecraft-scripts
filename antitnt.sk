@@ -1,0 +1,5 @@
+on place of tnt:
+    cancel event
+
+on explode:
+    cancel event
