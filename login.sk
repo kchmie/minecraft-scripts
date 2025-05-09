@@ -38,7 +38,7 @@ command /login <text>:
         send title "" with subtitle "" to player for 0 seconds
 
         broadcast "§6✨ §e%player% §7dołączył do §dTotalnej Wyspy Żenady! §6🌴"
-        send "§7Wersja serwera: §a1.1 §7Co nowego: §fautosave" to player
+        send "§7Wersja serwera: §a1.2 §7Co nowego: §fAnti-TNT" to player
 
         set {lastlogin::%name of player%} to "%now%"
         delete {login_attempts::%uuid of player%}
